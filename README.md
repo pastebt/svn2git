@@ -28,11 +28,16 @@ git push -u origin --tags
 ## Update
 
 You have commit something into svn, now you want to backup to git server. 
-First you run ```bash svn up``` and ```bash svn diff``` to make sure local workspace is up to date
+First you run
+```bash
+svn up
+svn diff
+```
+to make sure local workspace is up to date
 
 get last revision of svn, sxxxxxx
 ```bash
-svn up | tail -1 | cut -d ' ' -f3 | tr -d '.'
+svn info|grep "Last Changed Rev"|cut -d ' ' -f4
 ```
 
 get last revision git have, gxxxxxx
