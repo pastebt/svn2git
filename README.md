@@ -4,7 +4,7 @@ backup working svn repository to remote git server, keeping commit message
 
 ## Init
 
-We use snv project name "mip" as sample
+We use svn project name "mip" as sample
 First get all author mapping list
 ```bash
 cd svn/project/trunk/mip
@@ -17,10 +17,10 @@ then clone from svn
 git svn clone http://your_svn_server/your_svnroot/project/trunk/mip --authors-file=users.txt --no-metadata
 ```
 
-let say you want to keep git back up at https://YourName@bitbucket.org/YourName/mip.git
+let say you want to keep backup at https://YourName@bitbucket.org/YourName/mip.git
 
 ```bash
-git remote add origin  https://PasteBT@bitbucket.org/PasteBT/mip.git
+git remote add origin  https://YourName@bitbucket.org/YourName/mip.git
 git push -u origin --all
 git push -u origin --tags
 ```
@@ -32,7 +32,7 @@ First you run ```bash svn up``` and ```bash svn diff``` to make sure local works
 
 get last revision of svn, sxxxxxx
 ```bash
-svn up|tail -1|cut -d ' ' -f3|tr -d '.'
+svn up | tail -1 | cut -d ' ' -f3 | tr -d '.'
 ```
 
 get last revision git have, gxxxxxx
@@ -40,7 +40,7 @@ get last revision git have, gxxxxxx
 tail -1 .git/logs/refs/remotes/git-svn | cut -f2 | tr -d 'r'
 ```
 
-now rever workspace to git point:
+now reverse workspace to git point:
 ```bash
 svn merge -r sxxxxx:gxxxxx .
 ```
