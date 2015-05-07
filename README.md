@@ -60,3 +60,95 @@ finally push to remote
 ```bash
 git push -u origin
 ```
+
+# simple systemd usage
+
+Assume one service at /home/swl/svr.py
+
+```python
+#! /usr/bin/python
+
+import os
+import sys
+import urllib2
+from BaseHTTPServer import BaseHTTPRequestHandler, HTTPServer
+
+
+running = True
+
+class MyHandler(BaseHTTPRequestHandler):
+    def do_GET(self):
+        global running
+        if self.path == '/stop_server':
+            #self.server.shutdown()
+            #sys.exit(0)
+            running = False
+        self.send_response(200)
+        self.send_header("Content-Length", len(self.path) + len("query \n"))
+        self.end_headers()
+        self.wfile.write("query " + self.path + "\n")
+
+
+def start(port):
+    #if os.fork() > 0:
+    #    sys.exit(0)
+    global running
+    print >> sys.stderr, "serving at port ", port
+    httpd = HTTPServer(("", port), MyHandler)
+    while running:
+        httpd.handle_request()
+
+
+def stop(port):
+    try:
+        urllib2.urlopen("http://127.0.0.1:%d/stop_server" % port).read()
+    except:
+        pass
+
+
+def usage():
+    print 'Usage:', sys.argv[0], 'start|stop [port]'
+    sys.exit(1)
+
+
+def main():
+    if len(sys.argv) not in (2, 3):
+        usage()
+    try:
+        port = int(sys.argv[2])
+    except:
+        port = 8000
+
+    if sys.argv[1] == 'start':
+        start(port)
+    elif sys.argv[1] == 'stop':
+        stop(port)
+    else:
+        usage()
+
+
+if __name__ == '__main__':
+    main()
+```
+And we have service filelike this:
+
+```
+[Unit]
+Description=My Test Server
+After=network.target
+
+[Service]
+#Type=forking   # if you add this, then your service should fork
+ExecStart=/home/swl/svr.py start 8000
+ExecStop=/home/swl/svr.py stop 8000
+
+[Install]
+WantedBy=multi-user.target
+```
+
+We can run command in /home/swl:
+
+```bash
+sudo systemctl enable /home/swl/mytstsvr.service
+sudo systemctl start mytstsvr
+```
