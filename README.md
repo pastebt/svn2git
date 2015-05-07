@@ -130,7 +130,7 @@ def main():
 if __name__ == '__main__':
     main()
 ```
-And we have service file like this:
+And we have service file mytstsvr.service :
 
 ```
 [Unit]
