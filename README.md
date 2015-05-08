@@ -78,10 +78,11 @@ class MyHandler(BaseHTTPRequestHandler):
     def do_GET(self):
         if self.path == '/stop_server':
             self.server.running = False
+        dat = "query " + self.path + "\n"
         self.send_response(200)
-        self.send_header("Content-Length", len(self.path) + len("query \n"))
+        self.send_header("Content-Length", len(dat))
         self.end_headers()
-        self.wfile.write("query " + self.path + "\n")
+        self.wfile.write(dat)
 
 
 def start(port):
@@ -142,7 +143,11 @@ WantedBy=multi-user.target
 ```
 
 We can run command in /home/swl:
+First link service into system path
 ```bash
 sudo systemctl enable /home/swl/mytstsvr.service
+```
+then start it
+```bash
 sudo systemctl start mytstsvr
 ```
