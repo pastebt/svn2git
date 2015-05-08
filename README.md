@@ -74,15 +74,10 @@ import urllib2
 from BaseHTTPServer import BaseHTTPRequestHandler, HTTPServer
 
 
-running = True
-
 class MyHandler(BaseHTTPRequestHandler):
     def do_GET(self):
-        global running
         if self.path == '/stop_server':
-            #self.server.shutdown()
-            #sys.exit(0)
-            running = False
+            self.server.running = False
         self.send_response(200)
         self.send_header("Content-Length", len(self.path) + len("query \n"))
         self.end_headers()
@@ -92,10 +87,10 @@ class MyHandler(BaseHTTPRequestHandler):
 def start(port):
     #if os.fork() > 0:
     #    sys.exit(0)
-    global running
     print >> sys.stderr, "serving at port ", port
     httpd = HTTPServer(("", port), MyHandler)
-    while running:
+    httpd.running = True
+    while httpd.running:
         httpd.handle_request()
 
 
@@ -130,9 +125,9 @@ def main():
 if __name__ == '__main__':
     main()
 ```
-And we have service file mytstsvr.service :
 
-```
+And we have service file mytstsvr.service :
+```ini
 [Unit]
 Description=My Test Server
 After=network.target
@@ -147,7 +142,6 @@ WantedBy=multi-user.target
 ```
 
 We can run command in /home/swl:
-
 ```bash
 sudo systemctl enable /home/swl/mytstsvr.service
 sudo systemctl start mytstsvr
